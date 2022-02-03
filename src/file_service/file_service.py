@@ -1,5 +1,4 @@
 import os
-from src.utils import generate_name
 
 
 def read(filename):
