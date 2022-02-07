@@ -1,24 +1,23 @@
 #! /usr/bin/env python3
 import argparse
-import os
 from src import file_service
-from src import utils
 
 
 def read_file():
     filename = input('Enter file name: ')
-    if os.path.isfile(filename):
+    data = file_service.read(filename)
+    if data:
         print(f"Reading file: {filename}")
-        print(file_service.read(filename))
+        print(data)
     else:
         print("File doesn't exists in current directory!")
 
 
 def delete_file():
     filename = input('Enter file name: ')
-    if os.path.isfile(filename):
+    result = file_service.delete(filename)
+    if result:
         print(f"Delete file: {filename}")
-        file_service.delete(filename)
     else:
         print("File doesn't exists in current directory!")
 
@@ -30,24 +29,23 @@ def list_dir():
 
 def change_dir():
     directory = input("Enter dir name: ")
-    if os.path.isdir(directory):
+    result = file_service.change_dir(directory)
+    if result:
         print(f"Change dir: {directory}")
-        file_service.change_dir(directory)
     else:
         print("Directory doesn't exists!")
 
 
 def create_file():
     content = input("Enter file content: ")
-    filename = utils.generate_name(10)
+    filename = file_service.create(content)
     print(f"Creating file {filename} with content: \n{content}")
-    file_service.create(filename, content)
 
 
 def get_file_permissions():
     filename = input('Enter file name: ')
-    if os.path.isfile(filename):
-        permissions = file_service.get_permissions(filename)
+    permissions = file_service.get_permissions(filename)
+    if permissions:
         print(f'Permissions: {permissions}')
     else:
         print("File doesn't exists in current directory!")
@@ -55,10 +53,10 @@ def get_file_permissions():
 
 def set_file_permissions():
     filename = input('Enter file name: ')
-    if os.path.isfile(filename):
-        permissions = int(input("Enter UNIX permissions in oct format: "))
-        print(f'Set {permissions} to filename {filename}')
-        file_service.set_permissions(filename, permissions)
+    permissions = int(input("Enter UNIX permissions in oct format: "))
+    result = file_service.set_permissions(filename, permissions)
+    if result:
+        print(f'Setting {permissions} to filename {filename}')
     else:
         print("File doesn't exists in current directory!")
 
@@ -77,7 +75,7 @@ def main():
     parser.add_argument('-d', '--directory', dest='path', help='Set working directory', default='.')
     args = parser.parse_args()
     directory = args.path
-    os.chdir(directory)
+    file_service.change_dir(directory)
     while True:
         command = input("Enter command: ")
         if command == "exit":
