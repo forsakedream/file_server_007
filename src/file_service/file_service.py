@@ -11,7 +11,7 @@ def read(filename):
 
 
 def delete(filename):
-    if os.path.isfile(filename):
+    if os.path.isfile(filename) and (not os.path.isdir(filename)):
         os.remove(filename)
         return True
     else:

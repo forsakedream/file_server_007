@@ -10,6 +10,6 @@ def generate_random(n):
 
 def generate_name(length):
     name = generate_random(length)
-    while os.path.isfile(name) and os.path.isdir(name):
+    while os.path.isfile(name) or os.path.isdir(name):
         name = generate_random(length)
     return name
