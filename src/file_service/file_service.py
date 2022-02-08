@@ -2,7 +2,12 @@ import os
 from src import utils
 
 
-def read(filename):
+def read(filename: str) -> str or bool:
+    """
+    Read file from disk by filename
+    :param filename: name of file
+    :return: file content, if file exists, else False
+    """
     if os.path.isfile(filename) and (not os.path.isdir(filename)):
         with open(filename, 'r') as file:
             return file.read()
@@ -10,7 +15,12 @@ def read(filename):
         return False
 
 
-def delete(filename):
+def delete(filename: str) -> bool:
+    """
+    Delete string by filename
+    :param filename: name of file
+    :return: True, if file deleted, else False
+    """
     if os.path.isfile(filename) and (not os.path.isdir(filename)):
         os.remove(filename)
         return True
@@ -18,11 +28,20 @@ def delete(filename):
         return False
 
 
-def list_dir():
+def list_dir() -> list:
+    """
+    Return list of files and directories in the current directory
+    :return: list of files and directories in the current directory
+    """
     return os.listdir()
 
 
-def change_dir(directory):
+def change_dir(directory: str) -> bool:
+    """
+    Change current directory
+    :param directory: name of directory
+    :return: True, if desired directory is valid, else False
+    """
     if os.path.isdir(directory):
         os.chdir(directory)
         return True
@@ -30,24 +49,45 @@ def change_dir(directory):
         return False
 
 
-def create(content):
+def create(content: str) -> str:
+    """
+    Create file with unique file name and desired content
+    :param content: content of created file
+    :return: unique filename
+    """
     filename = utils.generate_name(10)
     create_file(filename, content)
     return filename
 
 
-def create_file(filename, content):
+def create_file(filename: str, content: str) -> None:
+    """
+    Write content to file
+    :param filename: name of file
+    :param content: content of file
+    """
     with open(filename, "w") as file:
         file.write(content)
 
 
-def get_permissions(filename):
+def get_permissions(filename: str) -> oct or bool:
+    """
+    Get permissions of filename
+    :param filename: name of file
+    :return: permissions (oct), if file is valid, else False
+    """
     if os.path.isfile(filename) and (not os.path.isdir(filename)):
         return oct(os.stat(filename).st_mode)
     return False
 
 
-def set_permissions(filename, permissions):
+def set_permissions(filename: str, permissions: int) -> bool:
+    """
+    Set permissions to file
+    :param filename: name of file
+    :param permissions: permissions of file (int)
+    :return: True, if file is valid, else False
+    """
     if os.path.isfile(filename) and (not os.path.isdir(filename)):
         os.chmod(filename, permissions)
         return True
