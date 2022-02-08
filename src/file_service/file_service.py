@@ -1,8 +1,10 @@
 import os
+from typing import Union
+
 from src import utils
 
 
-def read(filename: str) -> str or bool:
+def read(filename: str) -> Union[str, bool]:
     """
     Read file from disk by filename
     :param filename: name of file
@@ -70,7 +72,7 @@ def create_file(filename: str, content: str) -> None:
         file.write(content)
 
 
-def get_permissions(filename: str) -> oct or bool:
+def get_permissions(filename: str) -> Union[str, bool]:
     """
     Get permissions of filename
     :param filename: name of file
