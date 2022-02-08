@@ -5,9 +5,9 @@ import string
 
 def generate_random(n: int) -> str:
     """
-    Generate random name
-    :param n: length of name
-    :return: generated name
+    Generate random string
+    :param n: length of string
+    :return: generated string
     """
     name = "".join([random.choice(string.ascii_letters + string.digits) for _ in range(n)])
     return name

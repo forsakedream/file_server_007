@@ -87,7 +87,7 @@ def set_permissions(filename: str, permissions: int) -> bool:
     """
     Set permissions to file
     :param filename: name of file
-    :param permissions: permissions of file (int)
+    :param permissions: permissions of file in UNIX format, e.g 0777
     :return: True, if file is valid, else False
     """
     if os.path.isfile(filename) and (not os.path.isdir(filename)):
