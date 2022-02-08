@@ -6,6 +6,7 @@ import string
 def generate_random(n: int) -> str:
     """
     Generate random string
+
     :param n: length of string
     :return: generated string
     """
@@ -16,6 +17,7 @@ def generate_random(n: int) -> str:
 def generate_name(length: int) -> str:
     """
     Generate unique filename
+
     :param length: length of name
     :return: generated name
     """

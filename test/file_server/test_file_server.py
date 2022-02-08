@@ -177,10 +177,10 @@ def test_set_permissions_success(mocker):
     mocker.patch("os.path.isfile").return_value = True
     mocker.patch("os.path.isdir").return_value = False
 
-    result = file_service.set_permissions("bla", "blabla")
+    result = file_service.set_permissions("bla", 111)
 
     assert result is True
-    permock.assert_called_with("bla", "blabla")
+    permock.assert_called_with("bla", 111)
 
 
 def test_set_permissions_non_existing_file(mocker):
@@ -188,7 +188,7 @@ def test_set_permissions_non_existing_file(mocker):
     mocker.patch("os.path.isfile").return_value = False
     mocker.patch("os.path.isdir").return_value = False
 
-    result = file_service.set_permissions("bla", "blabla")
+    result = file_service.set_permissions("bla", 111)
 
     assert result is False
     permock.assert_not_called()
@@ -199,7 +199,7 @@ def test_set_permissions_directory(mocker):
     mocker.patch("os.path.isfile").return_value = False
     mocker.patch("os.path.isdir").return_value = True
 
-    result = file_service.set_permissions("bla", "blabla")
+    result = file_service.set_permissions("bla", 111)
 
     assert result is False
     permock.assert_not_called()
@@ -210,7 +210,7 @@ def test_set_permissions_file_with_dir_name(mocker):
     mocker.patch("os.path.isfile").return_value = True
     mocker.patch("os.path.isdir").return_value = True
 
-    result = file_service.set_permissions("bla", "blabla")
+    result = file_service.set_permissions("bla", 111)
 
     assert result is False
     permock.assert_not_called()
@@ -258,6 +258,44 @@ def test_get_permissions_file_with_dir_name(mocker):
     mocker.patch("os.path.isdir").return_value = True
 
     result = file_service.get_permissions("bla")
+
+    assert result is False
+    permock.assert_not_called()
+
+
+def test_get_file_metadata_success(mocker):
+    permock = mocker.patch("os.stat")
+    result_mock = mock.Mock()
+    result_mock.st_ctime = 1
+    result_mock.st_mtime = 2
+    result_mock.st_size = 3
+    permock.return_value = result_mock
+    mocker.patch("os.path.isfile").return_value = True
+    mocker.patch("os.path.isdir").return_value = False
+
+    result = file_service.get_file_meta_data("bla")
+
+    assert result == (1, 2, 3)
+    permock.assert_called_with("bla")
+
+
+def test_get_non_existing_file_metadata(mocker):
+    permock = mocker.patch("os.stat")
+    mocker.patch("os.path.isfile").return_value = False
+    mocker.patch("os.path.isdir").return_value = False
+
+    result = file_service.get_file_meta_data("bla")
+
+    assert result is False
+    permock.assert_not_called()
+
+
+def test_get_file_with_dirname_metadata(mocker):
+    permock = mocker.patch("os.stat")
+    mocker.patch("os.path.isfile").return_value = True
+    mocker.patch("os.path.isdir").return_value = True
+
+    result = file_service.get_file_meta_data("bla")
 
     assert result is False
     permock.assert_not_called()
