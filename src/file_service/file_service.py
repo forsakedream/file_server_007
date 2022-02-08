@@ -1,6 +1,6 @@
 import os
 from typing import Union
-
+from datetime import datetime as dt
 from src import utils
 
 
@@ -50,7 +50,7 @@ def get_file_meta_data(filename: str) -> Union[tuple, bool]:
     """
     if os.path.isfile(filename) and (not os.path.isdir(filename)):
         stat = os.stat(filename)
-        return stat.st_ctime, stat.st_mtime, stat.st_size
+        return _to_dt(stat.st_ctime), _to_dt(stat.st_mtime), stat.st_size
     else:
         return False
 
@@ -116,3 +116,7 @@ def set_permissions(filename: str, permissions: int) -> bool:
         os.chmod(filename, permissions)
         return True
     return False
+
+
+def _to_dt(time: float) -> str:
+    return dt.utcfromtimestamp(time).strftime("%Y-%m-%d %H:%M:%S")

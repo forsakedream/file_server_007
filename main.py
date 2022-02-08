@@ -61,6 +61,18 @@ def set_file_permissions():
         print("File doesn't exists in current directory!")
 
 
+def get_file_metadata():
+    filename = input('Enter file name: ')
+    result = file_service.get_file_meta_data(filename)
+    if result:
+        creation_date, modification_date, filesize = result
+        print(f'Creation date: {creation_date}\n'
+              f'Modification date: {modification_date}\n'
+              f'File size: {filesize} Bytes')
+    else:
+        print("File doesn't exists in current directory!")
+
+
 def main():
     commands = {
         "get": read_file,
@@ -69,7 +81,8 @@ def main():
         "ls": list_dir,
         "cd": change_dir,
         "get_permissions": get_file_permissions,
-        "set_permissions": set_file_permissions
+        "set_permissions": set_file_permissions,
+        "get_metadata": get_file_metadata
     }
     parser = argparse.ArgumentParser(description="Restful server")
     parser.add_argument('-d', '--directory', dest='path', help='Set working directory', default='.')
