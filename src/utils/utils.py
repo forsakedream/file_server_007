@@ -8,7 +8,7 @@ def generate_random(length: int) -> str:
     """
     Generate random string
 
-    :param n: length of string
+    :param length: length of string
     :return: generated string
     """
     name = "".join([random.choice(string.ascii_letters + string.digits) for _ in range(length)])
