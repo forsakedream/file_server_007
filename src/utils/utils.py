@@ -1,16 +1,18 @@
 import os
 import random
 import string
+import logging
 
 
-def generate_random(n: int) -> str:
+def generate_random(length: int) -> str:
     """
     Generate random string
 
     :param n: length of string
     :return: generated string
     """
-    name = "".join([random.choice(string.ascii_letters + string.digits) for _ in range(n)])
+    name = "".join([random.choice(string.ascii_letters + string.digits) for _ in range(length)])
+    logging.debug(f"Generating string: {name}")
     return name
 
 

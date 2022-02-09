@@ -1,5 +1,8 @@
 #! /usr/bin/env python3
 import argparse
+import yaml
+import logging
+import logging.config
 from src import file_service
 
 
@@ -104,4 +107,8 @@ def main():
 
 
 if __name__ == "__main__":
+    with open(file="./logging_config.yaml", mode='r') as file:
+        logging_yaml = yaml.load(stream=file, Loader=yaml.FullLoader)
+        logging.config.dictConfig(config=logging_yaml)
+    logging.debug("Starting application")
     main()
