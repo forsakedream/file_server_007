@@ -1,8 +1,9 @@
 import os
 import logging
-from typing import Union
+from typing import Union, Optional
 from datetime import datetime as dt
 from src import utils
+from src.crypto import SignatureFactory
 
 
 def read(filename: str) -> Union[str, bool]:
@@ -19,6 +20,24 @@ def read(filename: str) -> Union[str, bool]:
     else:
         logging.debug(f"Not Found: {filename}")
         return False
+
+
+def read_signed(filename: str) -> Optional[str]:
+    """
+    Read signed file from disk and check content
+
+    :param filename: name of file
+    :return: file content, if file exists and not broken, else Exceptions
+    """
+    data = read(filename)
+    for label in SignatureFactory.signers:
+        sig_filename = f"{filename}.{label}"
+        if os.path.exists(sig_filename):
+            signer = SignatureFactory.get_signer(label)
+            if signer(data) == read(sig_filename):
+                return data
+            else:
+                raise Exception("File is broken")
 
 
 def delete(filename: str) -> bool:
@@ -90,6 +109,22 @@ def create(content: str) -> str:
     logging.debug(f"Generated name: {filename}")
     create_file(filename, content)
     return filename
+
+
+def create_signed(content: str, signer: str) -> tuple:
+    """
+    Create signed file with unique file name and desired content
+
+    :param signer: md5, sha512
+    :param content: content of created file
+    :return: unique filename
+    """
+    filename = create(content)
+    sig_filename = f'{filename}.{signer}'
+    signer = SignatureFactory.get_signer(signer)
+    sig_content = signer(content)
+    create_file(sig_filename, sig_content)
+    return filename, sig_filename
 
 
 def create_file(filename: str, content: str) -> None:

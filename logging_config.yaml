@@ -10,19 +10,19 @@ formatters:
 handlers:
   console:
     class: logging.StreamHandler
-    level: DEBUG
+    level: ERROR
     formatter: simple
     stream: ext://sys.stdout
   file:
     class: logging.FileHandler
     level: DEBUG
     formatter: simple
-    filename: file_server_007.log
+    filename: log/file_server_007.log
   telemetry:
     class: logging.FileHandler
     level: INFO
     formatter: short
-    filename: telemetry.log
+    filename: log/telemetry.log
 loggers:
   telemetry:
     handlers: [telemetry]
