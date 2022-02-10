@@ -1,7 +1,6 @@
 #! /usr/bin/env python3
 import argparse
 import os
-import shutil
 import yaml
 import logging
 import logging.config

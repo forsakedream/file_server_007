@@ -1,4 +1,5 @@
 from src import file_service
+from src.crypto import SignatureFactory
 from mock import mock_open
 import mock
 
@@ -301,3 +302,21 @@ def test_get_file_with_dirname_metadata(mocker):
 
     assert result is False
     metadatamock.assert_not_called()
+
+
+def test_read_signed_success(mocker):
+    signers_labels = ["md5", "sha512"]
+    for signer_label in signers_labels:
+        read_data_mock = mocker.patch("src.file_service.read")
+        os_exists_mock = mocker.patch("os.path.exists")
+        os_exists_mock.return_value = True
+        signer = SignatureFactory.get_signer(signer_label)
+        data = "blabla"
+        read_data_mock.side_effect = iter([data, signer(data)])
+
+        result = file_service.read_signed("bla")
+
+        assert result == data
+        assert read_data_mock.call_count == 2
+        read_data_mock.assert_called_with("bla")
+        read_data_mock.assert_called_with(f"bla.{signer_label}")

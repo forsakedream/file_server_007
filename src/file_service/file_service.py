@@ -22,22 +22,27 @@ def read(filename: str) -> Union[str, bool]:
         return False
 
 
-def read_signed(filename: str) -> Optional[str]:
+def read_signed(filename: str) -> Union[str, bool]:
     """
     Read signed file from disk and check content
 
     :param filename: name of file
-    :return: file content, if file exists and not broken, else Exceptions
+    :return: file content, if file exists and not broken, else False
     """
     data = read(filename)
-    for label in SignatureFactory.signers:
-        sig_filename = f"{filename}.{label}"
-        if os.path.exists(sig_filename):
+    if data is not False:
+        for label in SignatureFactory.signers:
             signer = SignatureFactory.get_signer(label)
-            if signer(data) == read(sig_filename):
-                return data
+            sig_filename = signer.sig_filename(filename)
+            if os.path.exists(sig_filename):
+                if signer(data) == read(sig_filename):
+                    return data
+                else:
+                    raise Exception("File is Broken")
             else:
-                raise Exception("File is broken")
+                raise Exception("Signature file is missing!")
+    else:
+        return False
 
 
 def delete(filename: str) -> bool:
@@ -120,8 +125,8 @@ def create_signed(content: str, signer: str) -> tuple:
     :return: unique filename
     """
     filename = create(content)
-    sig_filename = f'{filename}.{signer}'
     signer = SignatureFactory.get_signer(signer)
+    sig_filename = signer.sig_filename(filename)
     sig_content = signer(content)
     create_file(sig_filename, sig_content)
     return filename, sig_filename
