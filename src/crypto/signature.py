@@ -1,8 +1,9 @@
 import hashlib
+from typing import Dict
 
 
 class SignatureFactory(type):
-    signers = {}
+    signers: Dict = {}
 
     def __new__(cls, classname, parents, attributes):
         if "__call__" not in attributes:

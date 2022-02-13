@@ -5,35 +5,36 @@ import yaml
 import logging
 import logging.config
 from src import file_service
+from src.config import Config
 
 
 def read_file():
     filename = input('Enter file name: ')
-    data = file_service.read(filename)
-    if data:
+    try:
+        data = file_service.read(filename)
         print(f"Reading file: {filename}")
         print(data)
-    else:
-        print("File doesn't exists in current directory!")
+    except Exception as e:
+        print(e)
 
 
 def read_signed_file():
     filename = input('Enter file name: ')
-    data = file_service.read_signed(filename)
-    if data:
+    try:
+        data = file_service.read_signed(filename)
         print(f"Reading file: {filename}")
         print(data)
-    else:
-        print("File doesn't exists in current directory!")
+    except Exception as e:
+        print(e)
 
 
 def delete_file():
     filename = input('Enter file name: ')
-    result = file_service.delete(filename)
-    if result:
+    try:
+        file_service.delete(filename)
         print(f"Delete file: {filename}")
-    else:
-        print("File doesn't exists in current directory!")
+    except Exception as e:
+        print(e)
 
 
 def list_dir():
@@ -43,11 +44,11 @@ def list_dir():
 
 def change_dir():
     directory = input("Enter dir name: ")
-    result = file_service.change_dir(directory)
-    if result:
+    try:
+        file_service.change_dir(directory)
         print(f"Change dir: {directory}")
-    else:
-        print("Directory doesn't exists!")
+    except Exception as e:
+        print(e)
 
 
 def create_file():
@@ -58,40 +59,41 @@ def create_file():
 
 def create_signed_file():
     content = input("Enter file content: ")
-    signer = input("Enter signer (md5, sha512): ")
+    config = Config()
+    signer = config.get_algo()
     filenames = file_service.create_signed(content, signer)
     print(f"Creating file {filenames[0]} and signature file {filenames[1]}, with content: \n{content}")
 
 
 def get_file_permissions():
     filename = input('Enter file name: ')
-    permissions = file_service.get_permissions(filename)
-    if permissions:
+    try:
+        permissions = file_service.get_permissions(filename)
         print(f'Permissions: {permissions}')
-    else:
-        print("File doesn't exists in current directory!")
+    except Exception as e:
+        print(e)
 
 
 def set_file_permissions():
     filename = input('Enter file name: ')
-    permissions = int(input("Enter UNIX permissions in oct format: "))
-    result = file_service.set_permissions(filename, permissions)
-    if result:
+    try:
+        permissions = int(input("Enter UNIX permissions in oct format: "))
+        file_service.set_permissions(filename, permissions)
         print(f'Setting {permissions} to filename {filename}')
-    else:
-        print("File doesn't exists in current directory!")
+    except Exception as e:
+        print(e)
 
 
 def get_file_metadata():
     filename = input('Enter file name: ')
-    result = file_service.get_file_meta_data(filename)
-    if result:
+    try:
+        result = file_service.get_file_meta_data(filename)
         creation_date, modification_date, filesize = result
         print(f'Creation date: {creation_date}\n'
               f'Modification date: {modification_date}\n'
               f'File size: {filesize} Bytes')
-    else:
-        print("File doesn't exists in current directory!")
+    except Exception as e:
+        print(e)
 
 
 def main():
@@ -118,6 +120,8 @@ def main():
         logging_yaml = yaml.load(stream=file, Loader=yaml.FullLoader)
         logging.config.dictConfig(config=logging_yaml)
     logging.debug(f"Starting application in {directory}")
+    config = Config()
+    config.load("config.ini")
     while True:
         command = input("Enter command: ")
         if command == "exit":

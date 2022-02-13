@@ -1,1 +1,1 @@
-from .signature import SignatureFactory
+from .signature import SignatureFactory, Signature

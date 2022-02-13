@@ -3,26 +3,25 @@ import logging
 from typing import Union, Optional
 from datetime import datetime as dt
 from src import utils
-from src.crypto import SignatureFactory
+from src.crypto import SignatureFactory, Signature
 
 
-def read(filename: str) -> Union[str, bool]:
+def read(filename: str) -> Optional[str]:
     """
     Read file from disk by filename
 
     :param filename: name of file
-    :return: file content, if file exists, else False
+    :return: file content, if file exists, else raise exception
     """
     if os.path.isfile(filename) and (not os.path.isdir(filename)):
         logging.debug(f"Opening: {filename}")
         with open(filename, 'r') as file:
             return file.read()
     else:
-        logging.debug(f"Not Found: {filename}")
-        return False
+        raise ValueError(f"Not Found: {filename}")
 
 
-def read_signed(filename: str) -> Union[str, bool]:
+def read_signed(filename: str) -> Optional[str]:
     """
     Read signed file from disk and check content
 
@@ -30,22 +29,21 @@ def read_signed(filename: str) -> Union[str, bool]:
     :return: file content, if file exists and not broken, else False
     """
     data = read(filename)
-    if data is not False:
-        for label in SignatureFactory.signers:
-            signer = SignatureFactory.get_signer(label)
-            sig_filename = signer.sig_filename(filename)
-            if os.path.exists(sig_filename):
-                if signer(data) == read(sig_filename):
+
+    for label in SignatureFactory.signers:
+        signer = SignatureFactory.get_signer(label)
+        sig_filename = signer.sig_filename(filename)
+        if os.path.exists(sig_filename):
+            with open(sig_filename, 'r') as sig_file:
+                if str(signer(data)) == str(sig_file.read()):
                     return data
                 else:
                     raise Exception("File is Broken")
-            else:
-                raise Exception("Signature file is missing!")
     else:
-        return False
+        raise Exception("Signature file is missing!")
 
 
-def delete(filename: str) -> bool:
+def delete(filename: str) -> Optional[bool]:
     """
     Delete string by filename
 
@@ -57,8 +55,7 @@ def delete(filename: str) -> bool:
         os.remove(filename)
         return True
     else:
-        logging.debug(f"Not Found: {filename}")
-        return False
+        raise ValueError(f"Not Found: {filename}")
 
 
 def list_dir() -> list:
@@ -71,20 +68,19 @@ def list_dir() -> list:
     return os.listdir()
 
 
-def get_file_meta_data(filename: str) -> Union[tuple, bool]:
+def get_file_meta_data(filename: str) -> Union[tuple]:
     """
-    Read file creation date, edit date, filesize
+    Read file creation date, edit date, file size
 
     :param filename:
-    :return tuple (create_date, modification_date, filesize), file exists, else False
+    :return tuple (create_date, modification_date, file size), file exists, else False
     """
     if os.path.isfile(filename) and (not os.path.isdir(filename)):
         stat = os.stat(filename)
         logging.debug(f"Getting metadata: {filename}")
         return _to_dt(stat.st_ctime), _to_dt(stat.st_mtime), stat.st_size
     else:
-        logging.debug(f"Not Found: {filename}")
-        return False
+        raise ValueError(f"Not Found: {filename}")
 
 
 def change_dir(directory: str) -> bool:
@@ -99,8 +95,7 @@ def change_dir(directory: str) -> bool:
         os.chdir(directory)
         return True
     else:
-        logging.debug(f"Not Found: {directory}")
-        return False
+        raise ValueError(f"Not Found: {directory}")
 
 
 def create(content: str) -> str:
@@ -144,7 +139,7 @@ def create_file(filename: str, content: str) -> None:
         file.write(content)
 
 
-def get_permissions(filename: str) -> Union[str, bool]:
+def get_permissions(filename: str) -> Optional[str]:
     """
     Get permissions of filename
 
@@ -155,11 +150,10 @@ def get_permissions(filename: str) -> Union[str, bool]:
         logging.debug(f"Getting permissions: {filename}")
         return oct(os.stat(filename).st_mode)
     else:
-        logging.debug(f"Not Found: {filename}")
-        return False
+        raise ValueError(f"Not Found: {filename}")
 
 
-def set_permissions(filename: str, permissions: int) -> bool:
+def set_permissions(filename: str, permissions: int) -> Optional[bool]:
     """
     Set permissions to file
 
@@ -172,8 +166,7 @@ def set_permissions(filename: str, permissions: int) -> bool:
         os.chmod(filename, permissions)
         return True
     else:
-        logging.debug(f"Not Found: {filename}")
-        return False
+        raise ValueError(f"Not Found: {filename}")
 
 
 def _to_dt(time: float) -> str:
