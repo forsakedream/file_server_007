@@ -1,9 +1,10 @@
 import hashlib
+import os
 from typing import Dict
+from src.config import Config
 
 
 class SignatureFactory(type):
-    signers: Dict = {}
 
     def __new__(cls, classname, parents, attributes):
         if "__call__" not in attributes:
@@ -11,19 +12,33 @@ class SignatureFactory(type):
         signer_class = type(classname, parents, attributes)
         if "label" not in attributes:
             signer_class.label = classname.lower()
-        SignatureFactory.signers[signer_class.label] = signer_class()
         return signer_class
-
-    @staticmethod
-    def get_signer(label):
-        return SignatureFactory.signers[label]
 
 
 class Signature:
     label = ""
 
+    @staticmethod
+    def get_signer(filename):
+        for signer in Signature.__subclasses__():
+            if os.path.exists(signer().sig_filename(filename)):
+                return signer()
+        else:
+            raise Exception("Signer is not found!")
+
+    def get_default_signer(self):
+        algo = Config().get_algo()
+        return self.get_signer_by_label(algo)
+
+    @staticmethod
+    def get_signer_by_label(label):
+        for signer in Signature.__subclasses__():
+            if signer().label == label:
+                return signer()
+
     def sig_filename(self, filename):
-        return f"{filename}.{type(self).label}"
+        sig_path = Config().sig_path()
+        return os.path.join(sig_path, f"{filename}.{type(self).label}")
 
 
 class MD5Signature(Signature, metaclass=SignatureFactory):

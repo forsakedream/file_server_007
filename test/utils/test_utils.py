@@ -1,7 +1,7 @@
 from src import utils
 
 
-def test_uniquness():
+def test_uniqueness():
     generated_strings = []
     string_length = 10
     for _ in range(100):

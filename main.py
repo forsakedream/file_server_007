@@ -4,8 +4,12 @@ import os
 import yaml
 import logging
 import logging.config
-from src import file_service
+from src.file_service import RawFileService, SignedFileService, EncryptedFileService
 from src.config import Config
+
+file_service = RawFileService()
+signed_file_service = SignedFileService(file_service)
+encrypted_file_service = EncryptedFileService(file_service)
 
 
 def read_file():
@@ -21,7 +25,17 @@ def read_file():
 def read_signed_file():
     filename = input('Enter file name: ')
     try:
-        data = file_service.read_signed(filename)
+        data = signed_file_service.read(filename)
+        print(f"Reading file: {filename}")
+        print(data)
+    except Exception as e:
+        print(e)
+
+
+def read_encrypted():
+    filename = input('Enter file name: ')
+    try:
+        data = encrypted_file_service.read(filename)
         print(f"Reading file: {filename}")
         print(data)
     except Exception as e:
@@ -31,7 +45,7 @@ def read_signed_file():
 def delete_file():
     filename = input('Enter file name: ')
     try:
-        file_service.delete(filename)
+        file_service.remove(filename)
         print(f"Delete file: {filename}")
     except Exception as e:
         print(e)
@@ -39,13 +53,13 @@ def delete_file():
 
 def list_dir():
     print("list_dir")
-    print(file_service.list_dir())
+    print(file_service.ls())
 
 
 def change_dir():
     directory = input("Enter dir name: ")
     try:
-        file_service.change_dir(directory)
+        file_service.cd(directory)
         print(f"Change dir: {directory}")
     except Exception as e:
         print(e)
@@ -59,10 +73,14 @@ def create_file():
 
 def create_signed_file():
     content = input("Enter file content: ")
-    config = Config()
-    signer = config.get_algo()
-    filenames = file_service.create_signed(content, signer)
+    filenames = signed_file_service.create(content)
     print(f"Creating file {filenames[0]} and signature file {filenames[1]}, with content: \n{content}")
+
+
+def create_encrypted_file():
+    content = input("Enter file content: ")
+    filenames = encrypted_file_service.create(content)
+    print(f"Creating encrypted file {filenames[0]} and key file {filenames[1]}, with content: \n{content}")
 
 
 def get_file_permissions():
@@ -87,7 +105,7 @@ def set_file_permissions():
 def get_file_metadata():
     filename = input('Enter file name: ')
     try:
-        result = file_service.get_file_meta_data(filename)
+        result = file_service.read_metadata(filename)
         creation_date, modification_date, filesize = result
         print(f'Creation date: {creation_date}\n'
               f'Modification date: {modification_date}\n'
@@ -107,13 +125,15 @@ def main():
         "set_permissions": set_file_permissions,
         "get_metadata": get_file_metadata,
         "read_signed": read_signed_file,
-        "create_signed": create_signed_file
+        "create_signed": create_signed_file,
+        "read_encrypted": read_encrypted,
+        "create_encrypted": create_encrypted_file
     }
     parser = argparse.ArgumentParser(description="Restful server")
     parser.add_argument('-d', '--directory', dest='path', help='Set working directory', default='.')
     args = parser.parse_args()
     directory = args.path
-    file_service.change_dir(directory)
+    file_service.cd(directory)
     if not os.path.exists("log"):
         os.mkdir("log")
     with open(file="./logging_config.yaml", mode='r') as file:
