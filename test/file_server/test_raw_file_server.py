@@ -83,7 +83,8 @@ def test_read_non_existing_file(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().read("bla")
-        open_mock.assert_not_called()
+
+    open_mock.assert_not_called()
 
 
 def test_read_directory(mocker):
@@ -93,7 +94,7 @@ def test_read_directory(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().read("bla")
-        open_mock.assert_not_called()
+    open_mock.assert_not_called()
 
 
 def test_read_with_dir_name(mocker):
@@ -103,7 +104,7 @@ def test_read_with_dir_name(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().read("bla")
-        open_mock.assert_not_called()
+    open_mock.assert_not_called()
 
 
 def test_delete_success(mocker):
@@ -124,7 +125,7 @@ def test_delete_non_existing_file(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().remove("bla")
-        delete_mock.assert_not_called()
+    delete_mock.assert_not_called()
 
 
 def test_delete_file_with_directory_name(mocker):
@@ -134,7 +135,7 @@ def test_delete_file_with_directory_name(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().remove("bla")
-        delete_mock.assert_not_called()
+    delete_mock.assert_not_called()
 
 
 def test_delete_directory(mocker):
@@ -144,7 +145,7 @@ def test_delete_directory(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().remove("bla")
-        delete_mock.assert_not_called()
+    delete_mock.assert_not_called()
 
 
 def test_cd_success(mocker):
@@ -163,7 +164,7 @@ def test_cd_not_existing_directory(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().cd("bla")
-        ch_dir.assert_not_called()
+    ch_dir.assert_not_called()
 
 
 def test_set_permissions_success(mocker):
@@ -184,7 +185,7 @@ def test_set_permissions_non_existing_file(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().set_permissions("bla", 111)
-        permock.assert_not_called()
+    permock.assert_not_called()
 
 
 def test_set_permissions_directory(mocker):
@@ -194,7 +195,7 @@ def test_set_permissions_directory(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().set_permissions("bla", 111)
-        permock.assert_not_called()
+    permock.assert_not_called()
 
 
 def test_set_permissions_file_with_dir_name(mocker):
@@ -204,7 +205,7 @@ def test_set_permissions_file_with_dir_name(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().set_permissions("bla", 111)
-        permock.assert_not_called()
+    permock.assert_not_called()
 
 
 def test_get_permissions_success(mocker):
@@ -228,7 +229,7 @@ def test_get_permissions_non_existing_file(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().get_permissions("bla")
-        permock.assert_not_called()
+    permock.assert_not_called()
 
 
 def test_get_permissions_directory(mocker):
@@ -238,7 +239,7 @@ def test_get_permissions_directory(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().get_permissions("bla")
-        permock.assert_not_called()
+    permock.assert_not_called()
 
 
 def test_get_permissions_file_with_dir_name(mocker):
@@ -248,7 +249,7 @@ def test_get_permissions_file_with_dir_name(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().get_permissions("bla")
-        permock.assert_not_called()
+    permock.assert_not_called()
 
 
 def test_get_file_metadata_success(mocker):
@@ -276,7 +277,7 @@ def test_get_non_existing_file_metadata(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().read_metadata("bla")
-        metadatamock.assert_not_called()
+    metadatamock.assert_not_called()
 
 
 def test_get_file_with_dirname_metadata(mocker):
@@ -286,5 +287,5 @@ def test_get_file_with_dirname_metadata(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().read_metadata("bla")
-        metadatamock.assert_not_called()
+    metadatamock.assert_not_called()
 

@@ -28,6 +28,3 @@ class FileService(metaclass=ABCMeta):
     def read_metadata(self, filename: str) -> Optional[tuple]:
         raise Exception("Not implemented")
 
-    @staticmethod
-    def create_file(filename, content) -> Optional[str]:
-        pass

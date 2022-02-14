@@ -20,9 +20,15 @@ class Signature:
 
     @staticmethod
     def get_signer(filename):
+        current_signer = None
         for signer in Signature.__subclasses__():
             if os.path.exists(signer().sig_filename(filename)):
-                return signer()
+                if not current_signer:
+                    current_signer = signer()
+                else:
+                    raise Exception("More than one signer is found!")
+        if current_signer:
+            return current_signer
         else:
             raise Exception("Signer is not found!")
 

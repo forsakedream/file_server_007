@@ -37,20 +37,9 @@ class RawFileService(FileService):
         """
         filename = utils.generate_name(10)
         logging.debug(f"Generated name: {filename}")
-        self.create_file(filename, content)
-        return filename
-
-    @staticmethod
-    def create_file(filename, content):
-        """
-        Write content to file
-
-        :param filename: name of file
-        :param content: content of file
-        """
-        logging.debug(f"Writing to: {filename}\nContent: {content}")
         with open(filename, "w") as file:
             file.write(content)
+        return filename
 
     def ls(self):
         """

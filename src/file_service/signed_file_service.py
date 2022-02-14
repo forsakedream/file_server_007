@@ -37,7 +37,8 @@ class SignedFileService(FileService):
         signer = Signature().get_default_signer()
         sig_filename = signer.sig_filename(filename)
         sig_content = signer(content)
-        self.wrapped_file_service.create_file(sig_filename, sig_content)
+        with open(sig_filename, "w") as file:
+            file.write(sig_content)
         return filename, sig_filename
 
     def ls(self):
