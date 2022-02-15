@@ -73,14 +73,14 @@ def create_file():
 
 def create_signed_file():
     content = input("Enter file content: ")
-    filenames = signed_file_service.create(content)
-    print(f"Creating file {filenames[0]} and signature file {filenames[1]}, with content: \n{content}")
+    filename = signed_file_service.create(content)
+    print(f"Creating signed file {filename} with content: \n{content}")
 
 
 def create_encrypted_file():
     content = input("Enter file content: ")
-    filenames = encrypted_file_service.create(content)
-    print(f"Creating encrypted file {filenames[0]} and key file {filenames[1]}, with content: \n{content}")
+    filename = encrypted_file_service.create(content)
+    print(f"Creating encrypted file {filename} with content: \n{content}")
 
 
 def get_file_permissions():

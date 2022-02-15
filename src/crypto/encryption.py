@@ -4,6 +4,7 @@ from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
 from src.config import Config
 from src.utils import generate_random
+from typing import Tuple
 import os
 
 
@@ -12,7 +13,7 @@ class Encryption(metaclass=ABCMeta):
     label = ""
 
     @abstractmethod
-    def encrypt(self, data) -> tuple:
+    def encrypt(self, data) -> Tuple[bytes, bytearray]:
         """
         Encrypts data,
         generate new key for each data
@@ -22,7 +23,7 @@ class Encryption(metaclass=ABCMeta):
         raise NotImplemented
 
     @abstractmethod
-    def decrypt(self, encrypted_data, key):
+    def decrypt(self, encrypted_data, key) -> str:
         """
         Decrypt data with provided key
         :param encrypted_data: data to decrypt
@@ -33,9 +34,15 @@ class Encryption(metaclass=ABCMeta):
 
     @staticmethod
     def get_encryptor(filename):
+        current_encryptor = None
         for encryptor in Encryption.__subclasses__():
             if os.path.exists(encryptor().key_name(filename)):
-                return encryptor()
+                if not current_encryptor:
+                    current_encryptor = encryptor()
+                else:
+                    raise Exception("More than one encryptor is found!")
+        if current_encryptor:
+            return current_encryptor
         else:
             raise Exception("Encryptor is not found!")
 
@@ -52,22 +59,32 @@ class Encryption(metaclass=ABCMeta):
         key_path = Config().key_path()
         return os.path.join(key_path, f"{filename}.{type(self).label}")
 
+    @staticmethod
+    def get_encryptor_by_label(label):
+        for encryptor in Encryption.__subclasses__():
+            if encryptor().label == label:
+                return encryptor()
+
 
 class SymmetricEncryption(Encryption):
 
     label = "aes"
 
     def encrypt(self, data):
-        session_key = generate_random(16).encode()[:16]
-        aes = AES.new(session_key, AES.MODE_EAX)
-        data, tag = aes.encrypt_and_digest(data.encode())
-        encrypted_data = [aes.nonce, tag, data]
+        key = generate_random(16).encode()
+        aes = AES.new(key, AES.MODE_EAX)
+        encrypted_data, tag = aes.encrypt_and_digest(data.encode())
+        session_key = bytearray(aes.nonce)
+        session_key.extend(bytearray(tag))
+        session_key.extend(bytearray(key))
         return encrypted_data, session_key
 
     def decrypt(self, encrypted_data, session_key):
-        nonce, tag, data = encrypted_data
+        n = 16
+        session_key = bytearray(session_key)
+        nonce, tag, session_key = [bytes(session_key[i:i + n]) for i in range(0, len(session_key), n)]
         aes = AES.new(session_key, AES.MODE_EAX, nonce)
-        data = aes.decrypt_and_verify(data, tag)
+        data = aes.decrypt_and_verify(encrypted_data, tag)
         return data.decode()
 
 
@@ -78,23 +95,27 @@ class HybridEncryption(Encryption):
     def __init__(self):
         self.symmetric_encryption = SymmetricEncryption()
         key_path = Config().key_path()
-        key_path = os.path.join(key_path, "key.pem")
-        if os.path.exists(key_path):
-            with open(key_path) as key:
-                self.rsa_key = RSA.import_key(key.read())
+        self.key_path = os.path.join(key_path, "key.pem")
+        self._rsa_key = None
+
+    @property
+    def rsa_key(self):
+        if os.path.exists(self.key_path):
+            with open(self.key_path) as key:
+                self._rsa_key = RSA.import_key(key.read())
         else:
             random_generator = Random.new().read
-            self.rsa_key = RSA.generate(1024, random_generator)
-            with open(key_path, "w") as file:
-                file.write(self.rsa_key.export_key("PEM").decode())
-        self.public_crypter = PKCS1_OAEP.new(self.rsa_key)
+            self._rsa_key = RSA.generate(1024, random_generator)
+            with open(self.key_path, "w") as file:
+                file.write(self._rsa_key.export_key("PEM").decode())
+        return PKCS1_OAEP.new(self._rsa_key)
 
-    def encrypt(self, data) -> tuple:
+    def encrypt(self, data):
         encrypted_data, session_key = self.symmetric_encryption.encrypt(data)
-        session_key = self.public_crypter.encrypt(session_key)
+        session_key = self.rsa_key.encrypt(session_key)
         return encrypted_data, session_key
 
     def decrypt(self, encrypted_data, session_key):
-        session_key = self.public_crypter.decrypt(session_key)
+        session_key = self.rsa_key.decrypt(bytearray(session_key))
         data = self.symmetric_encryption.decrypt(encrypted_data, session_key)
         return data

@@ -14,7 +14,7 @@ class EncryptedFileService(FileService):
         with open(key_file_name, "rb") as f:
             key = f.read()
         with open(filename, "rb") as file:
-            encrypted_data = [file.read(x) for x in (16, 16, -1)]
+            encrypted_data = file.read()
         decrypted_data = encryptor.decrypt(encrypted_data, key)
         return decrypted_data
 
@@ -23,11 +23,11 @@ class EncryptedFileService(FileService):
         encrypted_data, key = encryptor.encrypt(data)
         filename = utils.generate_name(10)
         with open(filename, "wb") as file:
-            [file.write(x) for x in encrypted_data]
+            file.write(encrypted_data)
         key_file_name = encryptor.key_name(filename)
         with open(key_file_name, "wb") as file:
             file.write(key)
-        return filename, key_file_name
+        return filename
 
     def ls(self):
         return self.wrapped_file_service.ls()

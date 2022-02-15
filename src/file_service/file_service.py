@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional
 from abc import ABCMeta, abstractmethod
 
 
@@ -9,7 +9,7 @@ class FileService(metaclass=ABCMeta):
         raise Exception("Not implemented")
 
     @abstractmethod
-    def create(self, data: str) -> Tuple[str, Optional[str]]:
+    def create(self, data: str) -> Optional[str]:
         raise Exception("Not implemented")
 
     @abstractmethod

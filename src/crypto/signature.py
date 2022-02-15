@@ -1,12 +1,11 @@
 import hashlib
 import os
-from typing import Dict
 from src.config import Config
 
 
 class SignatureFactory(type):
 
-    def __new__(cls, classname, parents, attributes):
+    def __new__(mcs, classname, parents, attributes):
         if "__call__" not in attributes:
             raise Exception(f"Signer class must implement {classname}.__call__ function")
         signer_class = type(classname, parents, attributes)

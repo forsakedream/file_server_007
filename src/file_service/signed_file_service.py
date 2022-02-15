@@ -1,7 +1,5 @@
 from .file_service import FileService
-import os
 from typing import Tuple
-from src.config import Config
 from src.crypto import Signature
 
 
@@ -39,7 +37,7 @@ class SignedFileService(FileService):
         sig_content = signer(content)
         with open(sig_filename, "w") as file:
             file.write(sig_content)
-        return filename, sig_filename
+        return filename
 
     def ls(self):
         return self.wrapped_file_service.ls()
