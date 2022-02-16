@@ -1,4 +1,5 @@
 from aiohttp import web
+from src.config import Config
 from src.file_service import RawFileService, SignedFileService, EncryptedFileService
 import json
 
@@ -6,7 +7,12 @@ import json
 class Handler:
 
     def __init__(self):
-        self.file_service = RawFileService(".")
+        self.raw_file_service = RawFileService(".")
+        self.file_service = self.raw_file_service
+        if Config().is_encrypted():
+            self.file_service = EncryptedFileService(self.file_service)
+        if Config().is_signed():
+            self.file_service = SignedFileService(self.file_service)
 
     async def ls(self, request, *args, **kwargs):
         dir_listing = self.file_service.ls()

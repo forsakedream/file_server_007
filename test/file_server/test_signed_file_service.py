@@ -120,7 +120,7 @@ def test_create_signed_success(mocker):
     open_mock = mock_open()
     file_service_mock = mock.Mock()
     file_service_mock.create.return_value = filename
-    algo_mock = mocker.patch("src.config.Config.get_algo")
+    algo_mock = mocker.patch("src.config.Config.signature_algo")
     sig_path_mock = mocker.patch("src.config.Config.sig_path")
     sig_path_mock.return_value = "."
     for label in ("md5", "sha512", "sha256"):

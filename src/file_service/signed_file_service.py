@@ -6,6 +6,7 @@ from src.crypto import Signature
 class SignedFileService(FileService):
     def __init__(self, wrapped_file_service):
         self.wrapped_file_service = wrapped_file_service
+        self.workdir = wrapped_file_service.workdir
 
     def read(self, filename: str) -> str:
         """

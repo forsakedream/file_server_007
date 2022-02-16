@@ -4,7 +4,7 @@ from src.utils import Singleton
 
 class Config(metaclass=Singleton):
     SIGNATURE_SECTION = "Signature"
-    CRYPTO = "Crypto"
+    CRYPTO = "Encryption"
 
     def __init__(self, filename=None):
         self.filename = filename
@@ -23,7 +23,13 @@ class Config(metaclass=Singleton):
                 value = self.config_data[section][param]
         return value
 
-    def get_algo(self):
+    def is_encrypted(self):
+        return self.get_param(Config.CRYPTO, "enabled", "false")
+
+    def is_signed(self):
+        return self.get_param(Config.SIGNATURE_SECTION, "enabled", "false")
+
+    def signature_algo(self):
         return self.get_param(Config.SIGNATURE_SECTION, "signature_algo", "md5")
 
     def key_path(self):

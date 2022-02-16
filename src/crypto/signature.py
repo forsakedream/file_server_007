@@ -32,7 +32,7 @@ class Signature:
             raise Exception("Signer is not found!")
 
     def get_default_signer(self):
-        algo = Config().get_algo()
+        algo = Config().signature_algo()
         return self.get_signer_by_label(algo)
 
     @staticmethod
