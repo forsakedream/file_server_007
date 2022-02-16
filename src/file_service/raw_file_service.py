@@ -58,6 +58,7 @@ class RawFileService(FileService):
         :return: True, if desired directory is valid, else False
         """
         if os.path.isdir(directory):
+            self.workdir = directory
             logging.debug(f"Changing dir to: {directory}")
             os.chdir(directory)
             return True

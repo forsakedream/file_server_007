@@ -4,8 +4,10 @@ import os
 import yaml
 import logging
 import logging.config
+from aiohttp import web
 from src.file_service import RawFileService, SignedFileService, EncryptedFileService
 from src.config import Config
+from src.http_server import create_web_app
 
 file_service = RawFileService()
 signed_file_service = SignedFileService(file_service)
@@ -114,7 +116,7 @@ def get_file_metadata():
         print(e)
 
 
-def main():
+def console_main():
     commands = {
         "read": read_file,
         "create": create_file,
@@ -154,6 +156,19 @@ def main():
             command()
         except Exception as ex:
             print(f"Error on {command} execution: {ex}")
+
+
+def main():
+    if not os.path.exists("log"):
+        os.mkdir("log")
+    with open(file="./logging_config.yaml", mode='r') as file:
+        logging_yaml = yaml.load(stream=file, Loader=yaml.FullLoader)
+        logging.config.dictConfig(config=logging_yaml)
+    logging.debug(f"Starting application in '.'")
+    config = Config()
+    config.load("config.ini")
+    app = create_web_app()
+    web.run_app(app)
 
 
 if __name__ == "__main__":
