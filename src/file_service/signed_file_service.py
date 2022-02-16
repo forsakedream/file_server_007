@@ -1,5 +1,4 @@
 from .file_service import FileService
-from typing import Tuple
 from src.crypto import Signature
 
 
@@ -8,7 +7,7 @@ class SignedFileService(FileService):
         self.wrapped_file_service = wrapped_file_service
         self.workdir = wrapped_file_service.workdir
 
-    def read(self, filename: str) -> str:
+    def read(self, filename):
         """
             Read signed file from disk and check content
 
@@ -24,7 +23,7 @@ class SignedFileService(FileService):
             else:
                 raise Exception("File is Broken")
 
-    def create(self, content: str):
+    def create(self, content):
         """
         Create signed file with unique file name and desired content
 
@@ -43,14 +42,20 @@ class SignedFileService(FileService):
     def ls(self):
         return self.wrapped_file_service.ls()
 
-    def cd(self, directory: str):
+    def cd(self, directory):
         return self.wrapped_file_service.cd(directory)
 
-    def remove(self, filename: str):
+    def remove(self, filename):
         self.wrapped_file_service.remove(filename)
         signer = Signature().get_signer(filename)
         sig_filename = signer.sig_filename(filename)
         self.wrapped_file_service.remove(sig_filename)
 
-    def read_metadata(self, filename: str) -> Tuple[int, int, int]:
+    def read_metadata(self, filename):
         return self.wrapped_file_service.read_metadata(filename)
+
+    def get_permissions(self, filename):
+        return self.wrapped_file_service.get_permissions(filename)
+
+    def set_permissions(self, filename, permissions):
+        return self.wrapped_file_service.get_permissions(filename, permissions)

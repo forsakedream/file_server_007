@@ -14,7 +14,7 @@ class RawFileService(FileService):
     def __init__(self, workdir="."):
         self.workdir = workdir
 
-    def read(self, filename: str):
+    def read(self, filename):
         """
         Read file from disk by filename
 
@@ -28,7 +28,7 @@ class RawFileService(FileService):
         else:
             raise ValueError(f"Not Found: {filename}")
 
-    def create(self, content: str):
+    def create(self, content):
         """
         Create file with unique file name and desired content
 
@@ -50,7 +50,7 @@ class RawFileService(FileService):
         logging.debug(f"Listing directories in current dir")
         return os.listdir()
 
-    def cd(self, directory: str):
+    def cd(self, directory):
         """
         Change current directory
 
@@ -65,7 +65,7 @@ class RawFileService(FileService):
         else:
             raise ValueError(f"Not Found: {directory}")
 
-    def remove(self, filename: str):
+    def remove(self, filename):
         """
         Delete string by filename
 
@@ -79,7 +79,7 @@ class RawFileService(FileService):
         else:
             raise ValueError(f"Not Found: {filename}")
 
-    def read_metadata(self, filename: str) -> tuple:
+    def read_metadata(self, filename):
         """
         Read file creation date, edit date, file size
 
@@ -93,7 +93,7 @@ class RawFileService(FileService):
         else:
             raise ValueError(f"Not Found: {filename}")
 
-    def get_permissions(self, filename: str) -> Optional[str]:
+    def get_permissions(self, filename):
         """
         Get permissions of filename
 
@@ -106,7 +106,7 @@ class RawFileService(FileService):
         else:
             raise ValueError(f"Not Found: {filename}")
 
-    def set_permissions(self, filename: str, permissions: int) -> Optional[bool]:
+    def set_permissions(self, filename, permissions):
         """
         Set permissions to file
 

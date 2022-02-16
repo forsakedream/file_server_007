@@ -8,13 +8,16 @@ class Config(metaclass=Singleton):
 
     def __init__(self, filename=None):
         self.filename = filename
-        self.config_data = None
+        self.config_data = {}
         if filename:
             self.load(self.filename)
 
     def load(self, filename):
-        self.config_data = configparser.ConfigParser()
-        self.config_data.read(filename)
+        try:
+            self.config_data = configparser.ConfigParser()
+            self.config_data.read(filename)
+        except Exception:
+            self.config_data = {}
 
     def get_param(self, section, param, default):
         value = default
@@ -24,10 +27,18 @@ class Config(metaclass=Singleton):
         return value
 
     def is_encrypted(self):
-        return self.get_param(Config.CRYPTO, "enabled", "false")
+        param = self.get_param(Config.CRYPTO, "enabled", "false")
+        if param == "true":
+            return True
+        else:
+            return False
 
     def is_signed(self):
-        return self.get_param(Config.SIGNATURE_SECTION, "enabled", "false")
+        param = self.get_param(Config.SIGNATURE_SECTION, "enabled", "false")
+        if param == "true":
+            return True
+        else:
+            return False
 
     def signature_algo(self):
         return self.get_param(Config.SIGNATURE_SECTION, "signature_algo", "md5")

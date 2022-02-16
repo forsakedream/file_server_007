@@ -28,3 +28,11 @@ class FileService(metaclass=ABCMeta):
     def read_metadata(self, filename: str) -> Optional[tuple]:
         raise Exception("Not implemented")
 
+    @abstractmethod
+    def get_permissions(self, filename: str) -> Optional[str]:
+        raise Exception("Not implemented")
+
+    @abstractmethod
+    def set_permissions(self, filename: str, permissions: int) -> Optional[bool]:
+        raise Exception("Not implemented")
+

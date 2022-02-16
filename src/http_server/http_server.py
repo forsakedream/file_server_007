@@ -6,8 +6,8 @@ import json
 
 class Handler:
 
-    def __init__(self):
-        self.raw_file_service = RawFileService(".")
+    def __init__(self, directory):
+        self.raw_file_service = RawFileService(directory)
         self.file_service = self.raw_file_service
         if Config().is_encrypted():
             self.file_service = EncryptedFileService(self.file_service)
@@ -51,9 +51,9 @@ class Handler:
         return web.Response(text=json.dumps(data))
 
 
-def create_web_app():
+def create_web_app(directory):
     app = web.Application()
-    handler = Handler()
+    handler = Handler(directory)
     app.add_routes([
         web.get('/ls', handler.ls),
         web.put('/cd', handler.cd),
