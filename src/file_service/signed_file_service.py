@@ -1,11 +1,15 @@
 from .file_service import FileService
 from src.crypto import Signature
+import os
+
+from src.config import Config
 
 
 class SignedFileService(FileService):
     def __init__(self, wrapped_file_service):
         self.wrapped_file_service = wrapped_file_service
         self.workdir = wrapped_file_service.workdir
+        os.makedirs(Config().sig_path(), exist_ok=True)
 
     def read(self, filename):
         """
@@ -27,7 +31,6 @@ class SignedFileService(FileService):
         """
         Create signed file with unique file name and desired content
 
-        :param signer: md5, sha512
         :param content: content of created file
         :return: unique filename
         """

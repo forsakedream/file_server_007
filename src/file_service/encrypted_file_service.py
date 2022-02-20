@@ -1,12 +1,15 @@
 from .file_service import FileService
 from src import utils
 from src.crypto import Encryption
+from src.config import Config
+import os
 
 
 class EncryptedFileService(FileService):
     def __init__(self, wrapped_file_service):
         self.wrapped_file_service = wrapped_file_service
         self.workdir = wrapped_file_service.workdir
+        os.makedirs(Config().key_path(), exist_ok=True)
 
     def read(self, filename):
         encryptor = Encryption.get_encryptor(filename)

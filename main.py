@@ -44,13 +44,11 @@ def http_main(directory):
 
 def main():
     parser = argparse.ArgumentParser(description="Restful server")
-    parser.add_argument('-d', '--directory', dest='path', help='Set working directory', default='.')
+    parser.add_argument('-d', '--directory', dest='path', help='Set working directory', default='./files')
     parser.add_argument('-m', '--mode', dest='mode', help='Set working mode (web, console)', default='console')
     args = parser.parse_args()
     directory = args.path
     mode = args.mode
-    if os.path.exists(directory):
-        os.chdir(directory)
     if not os.path.exists("log"):
         os.mkdir("log")
     with open(file="./logging_config.yaml", mode='r') as file:

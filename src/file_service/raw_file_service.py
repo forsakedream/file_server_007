@@ -13,6 +13,7 @@ def _to_dt(time: float) -> str:
 class RawFileService(FileService):
     def __init__(self, workdir="."):
         self.workdir = workdir
+        os.chdir(self.workdir)
 
     def read(self, filename):
         """

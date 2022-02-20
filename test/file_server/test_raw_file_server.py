@@ -164,7 +164,7 @@ def test_cd_not_existing_directory(mocker):
 
     with pytest.raises(ValueError):
         assert file_service.RawFileService().cd("bla")
-    ch_dir.assert_not_called()
+    ch_dir.assert_called_once()
 
 
 def test_set_permissions_success(mocker):

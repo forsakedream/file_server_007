@@ -12,6 +12,10 @@ class Encryption(metaclass=ABCMeta):
 
     label = ""
 
+    @property
+    def key_path(self):
+        return Config().key_path()
+
     @abstractmethod
     def encrypt(self, data) -> Tuple[bytes, bytearray]:
         """
@@ -56,7 +60,7 @@ class Encryption(metaclass=ABCMeta):
             return HybridEncryption()
 
     def key_name(self, filename):
-        key_path = Config().key_path()
+        key_path = self.key_path
         return os.path.join(key_path, f"{filename}.{type(self).label}")
 
     @staticmethod
@@ -94,19 +98,19 @@ class HybridEncryption(Encryption):
 
     def __init__(self):
         self.symmetric_encryption = SymmetricEncryption()
-        key_path = Config().key_path()
-        self.key_path = os.path.join(key_path, "key.pem")
+        key_path = self.key_path
+        self.pem_key_path = os.path.join(key_path, "key.pem")
         self._rsa_key = None
 
     @property
     def rsa_key(self):
-        if os.path.exists(self.key_path):
-            with open(self.key_path) as key:
+        if os.path.exists(self.pem_key_path):
+            with open(self.pem_key_path) as key:
                 self._rsa_key = RSA.import_key(key.read())
         else:
             random_generator = Random.new().read
             self._rsa_key = RSA.generate(1024, random_generator)
-            with open(self.key_path, "w") as file:
+            with open(self.pem_key_path, "w") as file:
                 file.write(self._rsa_key.export_key("PEM").decode())
         return PKCS1_OAEP.new(self._rsa_key)
 

@@ -17,6 +17,10 @@ class SignatureFactory(type):
 class Signature:
     label = ""
 
+    @property
+    def sig_path(self):
+        return Config().sig_path()
+
     @staticmethod
     def get_signer(filename):
         current_signer = None
@@ -42,7 +46,7 @@ class Signature:
                 return signer()
 
     def sig_filename(self, filename):
-        sig_path = Config().sig_path()
+        sig_path = self.sig_path
         return os.path.join(sig_path, f"{filename}.{type(self).label}")
 
 
