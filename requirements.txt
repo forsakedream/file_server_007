@@ -5,5 +5,7 @@ mock~=4.0.3
 PyYaml~=6.0
 pycryptodome
 aiohttp
+psycopg2
+psycopg2-binary
 pytest-aiohttp
 pytest-asyncio
